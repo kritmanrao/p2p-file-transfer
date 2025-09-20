@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Socket.IO chat</title>
+
+    <style>
+      body {
+        margin: 0;
+        padding-bottom: 3rem;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+        background: #f0f0f0;
+      }
+
+      #form {
+        background: rgba(0, 0, 0, 0.15);
+        padding: 0.25rem;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        height: 3rem;
+        box-sizing: border-box;
+        backdrop-filter: blur(10px);
+      }
+
+      #roomId {
+        border: none;
+        padding: 0 1rem;
+        width: 100px;
+        border-radius: 10px 0px 0px 10px;
+        margin: 0.25rem;
+      }
+
+      #input {
+        border: none;
+        padding: 0 1rem;
+        flex-grow: 1;
+        border-radius: 0px 10px 10px 0px;
+        margin: 0.25rem;
+      }
+      input:focus {
+        outline: rgba(173, 242, 173, 0.856) 2px solid;
+      }
+
+      #form > button {
+        background: #333;
+        border: none;
+        padding: 0 1rem;
+        margin: 0.25rem;
+        border-radius: 1rem;
+        outline: none;
+        color: #fff;
+        cursor: pointer;
+      }
+
+      #messages {
+        list-style-type: none;
+        margin: 0;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      #messages > li {
+        max-width: 70%;
+        padding: 0.6rem 1rem;
+        border-radius: 1.2rem;
+        word-wrap: break-word;
+        line-height: 1.4;
+        font-size: 14px;
+      }
+
+      /* Received message (default, left side) */
+      #messages > li.received {
+        align-self: flex-start;
+        background: #ffffff;
+        color: #111;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      }
+
+      /* Sent message (right side) */
+      #messages > li.sent {
+        align-self: flex-end;
+        background: #dcf8c6;
+        color: #111;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      }
+    </style>
+  </head>
+  <body>
+    <ul id="messages"></ul>
+    <form id="form">
+      <input type="text" id="roomId" />
+      <input id="input" autocomplete="off" name="messages" />
+      <button>Send</button>
+    </form>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+
+      let isJoined = false;
+      let myId = null;
+
+      const messageBox = document.getElementById("messages");
+      const form = document.getElementById("form");
+      const room = document.getElementById("roomId");
+      const input = document.getElementById("input");
+
+      function showMessage(msg, isSent) {
+        const newNode = document.createElement("li");
+        newNode.innerText = msg;
+        newNode.className = isSent ? "sent" : "received";
+        messageBox.appendChild(newNode);
+      }
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const inputValue = input.value.trim();
+        const roomId = room.value.trim();
+
+        input.value = "";
+
+        if (!room || !inputValue) return;
+
+        if (!isJoined) {
+          socket.emit("joinRoom", roomId);
+          isJoined = true;
+        }
+
+        socket.emit("chatMessage", {
+          roomId: roomId,
+          id: myId,
+          msg: inputValue,
+        });
+
+        showMessage(inputValue, true);
+      });
+
+      socket.on("connect", () => {
+        myId = socket.id;
+        console.log("my id :" + myId);
+      });
+
+      socket.on("chatMessage", ({ id, msg }) => {
+        if (id !== myId) {
+          showMessage(msg, false);
+        }
+      });
+    </script>
+  </body>
+</html>
