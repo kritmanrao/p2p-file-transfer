@@ -1,33 +1,51 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
+import { useEffect, useState, useRef } from "react";
+import { Message, Join } from "./components";
+import socket from "./socket";
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [isJoin, setIsJoin] = useState(false);
+  const [chats, setChats] = useState([]);
+  const [message, setMessage] = useState("");
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    socket.on("chatMessage", (msg) => {
+      setChats((prev) => [...prev, msg]);
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    });
+
+    return () => socket.off("chatMessage");
+  }, []);
+
+  function sendMessage() {
+    if (!message.trim()) return;
+    socket.emit("chatMessage", { id: socket.id, msg: message.trim() });
+    setMessage("");
+  }
+
+  if (!isJoin) return <Join onJoin={setIsJoin} />;
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p> 
+      <h1>Your ID: {socket.id}</h1>
+      <Message chats={chats} myId={socket.id} />
+      <div ref={messagesEndRef} />
+      <form
+        id="form"
+        onSubmit={(e) => {
+          e.preventDefault();
+          sendMessage();
+        }}
+      >
+        <input
+          id="input"
+          name="message"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Type a message..."
+        />
+        <button type="submit">Send</button>
+      </form>
     </>
   );
 }

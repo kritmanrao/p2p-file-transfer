@@ -1,68 +1,88 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
+body {
+  margin: 0;
+  padding-bottom: 3rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
 }
 
 body {
-  margin: 0;
+  background-color: #111;
+  color: wheat;
+}
+
+#form {
+  background: rgba(0, 0, 0, 0.15);
+  padding: 0.25rem;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  height: 3rem;
+  box-sizing: border-box;
+  backdrop-filter: blur(10px);
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+#roomId {
+  border: none;
+  padding: 0 1rem;
+  width: 100px;
+  border-radius: 10px 0px 0px 10px;
+  margin: 0.25rem;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+#input {
+  border: none;
+  padding: 0 1rem;
+  flex-grow: 1;
+  border-radius: 0px 10px 10px 0px;
+  margin: 0.25rem;
+}
+input:focus {
+  outline: rgba(173, 242, 173, 0.856) 2px solid;
+}
+
+#form > button {
+  background: #333;
+  border: none;
+  padding: 0 1rem;
+  margin: 0.25rem;
+  border-radius: 1rem;
+  outline: none;
+  color: #fff;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+#messages {
+  list-style-type: none;
+  margin: 0;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column; 
+  gap: 0.5rem;
+}
+
+#messages > li {
+  max-width: 70%;
+  padding: 0.6rem 1rem;
+  border-radius: 1.2rem;
+  word-wrap: break-word;
+  line-height: 1.4;
+  font-size: 14px;
+}
+
+/* Received message (default, left side) */
+#messages > li.received {
+  align-self: flex-start;
+  background: #ffffff;
+  color: #111;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Sent message (right side) */
+#messages > li.sent {
+  align-self: flex-end;
+  background: #dcf8c6;
+  color: #111;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
