@@ -1,145 +1,204 @@
-```markdown
-# 📂 P2P File Transfer
+```md
+# 🚀 P2P File Transfer App (WebRTC + Socket.IO)
 
-A browser-based **peer-to-peer file transfer app** using **WebRTC** for direct data transfer and **Socket.IO** for signaling.  
-This project allows users to send files directly between browsers without uploading them to a central server.
+A modern **peer-to-peer file sharing application** inspired by Netlify Drop / ShareDrop.  
+Files are transferred **directly between devices using WebRTC DataChannels**, while **Socket.IO is used only for signaling**.
 
----
-
-## ✨ Features
-- 🔗 Create / Join rooms using Socket.IO signaling
-- 📤 Direct browser-to-browser file transfer over WebRTC data channels
-- 📊 Real-time file transfer progress indicator
-- 🔒 No files stored on server — fully peer-to-peer
-- 🖥️ Simple and minimal UI
+No file bytes ever touch the server.
 
 ---
 
-## 🛠️ Tech Stack
-- **Frontend**: HTML, CSS, JavaScript (or React if you extend it)
-- **Backend (Signaling Server)**: Node.js + Express + Socket.IO
-- **Web APIs**:  
-  - WebRTC (RTCPeerConnection, DataChannel)  
-  - getUserMedia (optional for audio/video)
+## ✨ Key Features
+
+- 🔗 **Room-based file sharing**
+- 📁 **Drag & Drop + Manual file selection**
+- 🔒 **True peer-to-peer transfer using WebRTC**
+- ⚡ **High performance (no server bandwidth usage)**
+- 📊 **Real-time progress tracking**
+- 📥 **Download / Delete controls**
+- 🧾 **Shared & Received files panel**
+- 🎨 **Clean UI inspired by Netlify Drop**
+- 🧠 **Type-safe React + TypeScript codebase**
 
 ---
 
-## 📂 Project Structure
+## 🛠 Tech Stack
+
+**Frontend**
+
+- React (Vite)
+- TypeScript
+- Tailwind CSS
+- WebRTC (RTCPeerConnection + DataChannel)
+- Socket.IO Client
+
+**Backend**
+
+- Node.js
+- Express
+- Socket.IO (signaling only)
+
+---
+
+## 🧠 Architecture Overview
 ```
 
-p2p-file-transfer/
-├── frontend/          # client-side code (HTML/CSS/JS)
-├── server/            # Node.js + Socket.IO signaling server
-├── .gitignore
-├── README.md
+Sender Browser ────────► Receiver Browser
+▲ ▲
+│ │
+└──── Socket.IO ──────┘
+(Signaling only)
 
 ````
 
+- **Socket.IO**
+  - Exchanges offer, answer, ICE candidates
+  - No file data passes through server
+- **WebRTC**
+  - Creates direct peer-to-peer connection
+  - Sends file chunks using DataChannel
+
 ---
 
-## 🚀 Getting Started
+## 📸 Screenshots
 
-### 1️⃣ Clone the repo
+### 🏠 Home / Join Room
+![Home Page](screenshots/home.png)
+
+### 📤 Sender – Drag & Drop
+![Sender](screenshots/sender.png)
+
+### 📥 Receiver – Download & Delete
+![Receiver](screenshots/receiver.png)
+
+### 📂 Shared & Received Files Panel
+![Panel](screenshots/panel.png)
+
+---
+
+## ▶️ Getting Started
+
+### Backend
 ```bash
-git clone https://github.com/kritmanrao/p2p-file-transfer.git
-cd p2p-file-transfer
+cd backend
+pnpm install
+node server.js
 ````
 
-### 2️⃣ Start the signaling server
+Runs at: `http://localhost:3000`
 
-```bash
-cd server
-npm install
-npm start
-```
-
-By default the server runs on **[http://localhost:3000](http://localhost:3000)**.
-
-### 3️⃣ Start the frontend
-
-* Open the `frontend/index.html` file directly in a browser, **or**
-* Use a simple HTTP server (e.g., `npm install -g live-server`)
+### Frontend
 
 ```bash
 cd frontend
-live-server
+pnpm install
+pnpm dev
 ```
 
----
-
-## 🎮 How It Works
-
-1. User **A** creates a room → server generates a unique room ID.
-2. User **B** joins the same room using that room ID.
-3. Server uses **Socket.IO** to exchange WebRTC offers/answers (signaling).
-4. Once the peer connection is established, files are transferred **directly** between browsers via WebRTC DataChannels.
-5. The server is **only used for signaling**, not for file storage.
+Runs at: `http://localhost:5173`
 
 ---
 
-## 📸 Demo (Optional)
+## 🧪 How To Use
 
-*Add screenshots or a GIF here showing file transfer in action.*
-
----
-
-## 📜 .gitignore (important)
-
-```gitignore
-# Node.js dependencies
-node_modules/
-
-# Logs
-*.log
-
-# Environment files
-.env
-
-# Build outputs
-dist/
-build/
-
-# OS/editor files
-.DS_Store
-Thumbs.db
-.vscode/
-.idea/
-```
+1. Open app in **two tabs or devices**
+2. Enter the **same room ID**
+3. One user selects **Send**
+4. Other selects **Receive**
+5. Drag & drop a file → instant transfer 🚀
 
 ---
 
-## 🤝 Contributing
+## ⚠️ Limitations
 
-Contributions, issues, and feature requests are welcome!
-Feel free to fork this repo and submit a pull request.
+- Uses **STUN only**
+- Some restricted networks may block P2P connections
+
+👉 Production systems require a **TURN server**.
 
 ---
 
-## 📄 License
+## 🔮 Future Enhancements
 
-This project is licensed under the **MIT License**.
-See the [LICENSE](LICENSE) file for details.
+- Pause / resume transfer
+- Multiple file support
+- Encryption layer on chunks
+- TURN server fallback
+- Shareable room links
+- Mobile-first UI
 
 ---
 
 ## 👤 Author
 
-**Kritman Kumar Rao**
-
-* GitHub: [@kritmanrao](https://github.com/kritmanrao)
-* LinkedIn: [Kritman Kumar Rao](https://www.linkedin.com/in/kritman-kumar-rao-009325327/)
-* LeetCode: [kritmanrao](https://leetcode.com/u/kritmanrao/)
-
-````
+**Kritmaan Rao**
+B.Tech CSE | Backend & Systems Enthusiast
 
 ---
 
-👉 Next step: Copy this into your repo’s `README.md`, commit, and push:
+```
 
-```bash
-git add README.md
-git commit -m "docs: add full project README"
-git push origin main
-````
+## 3️⃣ System Design explanation
 
 ---
+
+### Step-by-step flow
+
+**1. Room Join**
+- Both users join the same room via Socket.IO
+- Server maps sockets by room ID
+
+**2. WebRTC Signaling**
+- Sender creates a WebRTC offer
+- Offer is sent to receiver through Socket.IO
+- Receiver replies with an answer
+- ICE candidates exchanged for NAT traversal
+
+**3. DataChannel Creation**
+- Once signaling completes, WebRTC establishes a direct connection
+- A `RTCDataChannel` is opened for binary data
+
+**4. File Transfer**
+- Sender:
+  - Sends file metadata (name, size, type)
+  - Splits file into fixed-size chunks
+  - Streams chunks via DataChannel
+- Receiver:
+  - Collects chunks into memory
+  - Reconstructs file using `Blob`
+  - Exposes Download/Delete actions
+
+**5. Cleanup**
+- Object URLs are revoked
+- Channels and peer connections closed
+
+---
+
+### Why this design is efficient
+
+- 🚫 No server bandwidth usage
+- ⚡ Lower latency
+- 🔐 Better privacy
+- 📈 Scales better than server-based uploads
+
+---
+
+### Trade-offs
+
+- Requires TURN servers in restrictive networks
+- Browser memory limits for very large files
+- Slightly complex signaling logic
+
+---
+
+### How this compares to server upload apps
+
+| Feature | This App | Traditional Upload |
+|------|-------|----------------|
+Server stores file | ❌ | ✅
+Bandwidth cost | Low | High
+Privacy | High | Medium
+Scalability | Better | Limited
+
+---
+```
