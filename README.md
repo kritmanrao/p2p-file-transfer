@@ -62,17 +62,28 @@ Sender Browser ────────► Receiver Browser
 
 ## 📸 Screenshots
 
-### 🏠 Home / Join Room
+### 🏠 Home – Join or Create Room
+Create or join a room using a unique room ID.
 ![Home Page](screenshots/home.png)
 
-### 📤 Sender – Drag & Drop
+---
+
+### 📤 Sender – Drag & Drop Upload
+Upload files easily using drag & drop or file picker.
 ![Sender](screenshots/sender.png)
 
+---
+
 ### 📥 Receiver – Download & Delete
+Download received files or delete them after use.
 ![Receiver](screenshots/receiver.png)
 
+---
+
 ### 📂 Shared & Received Files Panel
-![Panel](screenshots/panel.png)
+View all shared and received files in one unified panel.
+![Files Panel](screenshots/panel.png)
+
 
 ---
 

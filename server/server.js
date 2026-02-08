@@ -5,8 +5,29 @@ import { Server } from "socket.io";
 const app = express();
 const server = createServer(app);
 
+// health route (for testing deployment)
+app.get("/health", (req, res) => res.send("ok"));
+
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || "")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
+
+// If ALLOWED_ORIGINS is empty, allow all (useful for first deploy)
+const isOriginAllowed = (origin) => {
+  if (!origin) return true; // allow non-browser tools
+  if (allowedOrigins.length === 0) return true;
+  return allowedOrigins.includes(origin);
+};
+
 const io = new Server(server, {
-  cors: { origin: "*" }, // dev only
+  cors: {
+    origin: (origin, cb) => {
+      if (isOriginAllowed(origin)) return cb(null, true);
+      return cb(new Error(`Not allowed by CORS: ${origin}`));
+    },
+    credentials: true,
+  },
 });
 
 io.on("connection", (socket) => {
@@ -19,7 +40,6 @@ io.on("connection", (socket) => {
     console.log(`👥 ${socket.id} joined room ${roomId}`);
   });
 
-  // WebRTC signaling relay
   socket.on("webrtc:offer", ({ roomId, offer }) => {
     socket.to(roomId).emit("webrtc:offer", { offer });
   });
@@ -37,6 +57,7 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(3000, () => {
-  console.log("✅ Server running: http://localhost:3000");
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`✅ Server running on port ${PORT}`);
 });

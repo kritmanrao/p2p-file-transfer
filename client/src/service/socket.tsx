@@ -41,7 +41,9 @@ function SocketProvider({ children }: { children: React.ReactNode }) {
   const [{ status, mode, theme }, dispatch] = useReducer(reducer, initialState);
 
   if (!socketRef.current) {
-    socketRef.current = io("http://localhost:3000");
+    socketRef.current = io(import.meta.env.VITE_SOCKET_URL, {
+      transports: ["websocket"], // faster, avoids long polling delays
+    });
   }
 
   return (
